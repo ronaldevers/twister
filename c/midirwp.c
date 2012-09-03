@@ -33,7 +33,7 @@ static PyObject *setup(PyObject *self, PyObject *args)
     err = snd_seq_open(&seq, "default", SND_SEQ_OPEN_DUPLEX, 0);
     if (err < 0)
         RAISE("couldnt open sequencer connection\n");
-    
+
     // get client id
     my_client_id = snd_seq_client_id(seq);
 
@@ -65,7 +65,7 @@ static PyObject *teardown(PyObject *self, PyObject *args)
 {
     if (!PyArg_ParseTuple(args, "")) /* no args */
         return NULL;
-    
+
     // exit gracefully
     snd_seq_disconnect_to(seq, readable_port, dest_client_id, 0);
     snd_seq_disconnect_from(seq, writable_port, dest_client_id, 0);
@@ -75,19 +75,19 @@ static PyObject *teardown(PyObject *self, PyObject *args)
     return Py_None;
 }
 
-static PyObject *get_event(PyObject *self, PyObject *args) 
+static PyObject *get_event(PyObject *self, PyObject *args)
 {
     if (!PyArg_ParseTuple(args, "")) /* no args */
         return NULL;
-    
+
     Py_BEGIN_ALLOW_THREADS
     err = snd_seq_event_input(seq, &in_event);
     Py_END_ALLOW_THREADS
-    
+
     if (err < 0)
         return NULL;
 
-    if (in_event->type == SND_SEQ_EVENT_NOTEON || 
+    if (in_event->type == SND_SEQ_EVENT_NOTEON ||
         in_event->type == SND_SEQ_EVENT_NOTEOFF)
     {
         return Py_BuildValue("iiii",
@@ -96,7 +96,7 @@ static PyObject *get_event(PyObject *self, PyObject *args)
                              in_event->data.note.note,
                              in_event->data.note.velocity);
     }
-    else if (in_event->type == SND_SEQ_EVENT_CONTROLLER) 
+    else if (in_event->type == SND_SEQ_EVENT_CONTROLLER)
     {
         return Py_BuildValue("iiii",
                              in_event->type,
@@ -110,11 +110,11 @@ static PyObject *get_event(PyObject *self, PyObject *args)
     return Py_None;
 }
 
-static PyObject *get_event_nb(PyObject *self, PyObject *args) 
+static PyObject *get_event_nb(PyObject *self, PyObject *args)
 {
     if (!PyArg_ParseTuple(args, "")) /* no args */
         return NULL;
-    
+
     int n_events = snd_seq_event_input_pending(seq, 1);
     if (n_events > 0)
         return get_event(self, args);
@@ -128,7 +128,7 @@ static void send()
     snd_seq_ev_set_source(&ev, readable_port);
     snd_seq_ev_set_dest(&ev, dest_client_id, 0);
     snd_seq_ev_set_direct(&ev);
-        
+
     snd_seq_event_output(seq, &ev);
     snd_seq_drain_output(seq);
 }
@@ -137,10 +137,10 @@ static void send()
 static PyObject *send_note_on(PyObject *self, PyObject *args)
 {
     int channel, note, velocity;
-    
+
     if (!PyArg_ParseTuple(args, "iii", &channel, &note, &velocity))
         return NULL;
-    
+
     snd_seq_ev_clear(&ev);
     snd_seq_ev_set_noteon(&ev, channel, note, velocity);
     send();
@@ -152,10 +152,10 @@ static PyObject *send_note_on(PyObject *self, PyObject *args)
 static PyObject *send_control_change(PyObject *self, PyObject *args)
 {
     int channel, param, value;
-    
+
     if (!PyArg_ParseTuple(args, "iii", &channel, &param, &value))
         return NULL;
-    
+
     snd_seq_ev_clear(&ev);
     snd_seq_ev_set_controller(&ev, channel, param, value);
     send();
