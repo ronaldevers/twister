@@ -39,7 +39,8 @@ Twister comes with a bunch of plugins:
 - AppRaiser: uses wmctrl to raise application windows by their window class
 - Exo: for opening lots of stuff with exo-open, for example web urls
 - Git: sends keystrokes to your (focussed) terminal window
-- Rick: to win any argument by rendering the opponent flabberghasted, use sparingly
+- Mpg123: plays mp3's using mpg123 (use for BADOOMTISH, drumrolls and
+  most imporantly rickrolls)
 - Simple: for simply calling an external utility, possibly with static arguments
 - Spotify: for controlling Spotify playback (uses DBUS)
 - Volume: for controlling alsa system volume
