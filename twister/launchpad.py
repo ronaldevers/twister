@@ -48,37 +48,50 @@ class Launchpad(object):
     #
 
 
-    def note_on(self, note, color):
+    def note_on(self, note, color, flash=False):
         """Sends a note-on message to the device to control the LEDs
         under a pad.
 
         The pads are numbered from 0 to 8 on the first row (with
         square pads), 0x10 to 0x18 on the second row and so on. The
         top row of round pads is numbered from 0x68 to 0x6f."""
+        color = self._flashify(color, flash)
         midirwp.send_note_on(self.CHANNEL, note, color)
 
     def note_off(self, note):
         """turn off the LEDs under a pad"""
         midirwp.send_note_on(self.CHANNEL, note, self.CLEAR)
 
-    def control_on(self, param, color):
+    def control_on(self, param, color, flash=False):
         """turn on the LEDs under a pad in the top row
 
         The top row is controlled using control messages instead of
         note-on messages."""
+        color = self._flashify(color, flash)
         midirwp.send_control_change(self.CHANNEL, param, color)
 
     def control_off(self, param):
         """turn off the LEDs under a pad in the top row"""
         midirwp.send_control_change(self.CHANNEL, param, self.CLEAR)
 
-    def flash_on(self):
+    def _flash_on(self):
         """flashes leds that are configured to flash"""
         self.control_on(0, 0x28)
 
-    def flash_off(self):
+    def _flash_off(self):
         """turns off flashing"""
         self.control_on(0, 0x25)
+
+    def _flashify(self, color, flash):
+        """Returns a flashing or non-flashing version of the color by
+        making sure the COPY and CLEAR bits are set to the right
+        values."""
+        if flash:
+            # clear the other buffer and make sure copy is off
+            return (color | self.CLEAR) & ~self.COPY
+        else:
+            # COPY bit overrides CLEAR bit
+            return color | Launchpad.COPY
 
 
     #
@@ -139,8 +152,9 @@ class Launchpad(object):
     #
 
     def reset(self):
-        """turns off all LEDs, clears all buffers"""
+        """turns off all LEDs, clears all buffers and makes sure flash mode is on"""
         self.control_on(0, 0)
+        self._flash_on()
 
     def shutdown():
         """disconnect from ALSA and the device"""

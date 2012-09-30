@@ -59,11 +59,9 @@ class Git(Plugin):
     def _update_leds(self):
         """updates the leds based on the locked status"""
         if self.git_locked:
-            self.launchpad.flash_off()
             color = self.launchpad.RED
         else:
-            self.launchpad.flash_on()
-            color = 0x3b
+            color = self.launchpad.ORANGE
 
         for pad in range(self.width):
-            self.launchpad.note_on(self.position + pad, color)
+            self.launchpad.note_on(self.position + pad, color, flash=not self.git_locked)
