@@ -34,9 +34,9 @@ def call(executable, args=None, path=None):
 
     if args:
         args = shlex.split(str(args))
-        d = utils.getProcessOutput(executable, args=args, env=os.environ, path=path)
+        d = utils.getProcessOutput(executable, args=args, env=os.environ, path=path, errortoo=True)
     else:
-        d = utils.getProcessOutput(executable, env=os.environ, path=path)
+        d = utils.getProcessOutput(executable, env=os.environ, path=path, errortoo=True)
 
     d.addCallback(print_exit_code)
     return d
