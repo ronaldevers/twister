@@ -9,7 +9,7 @@ class Launchpad(object):
 
     # midi message types
     #
-    # the launchpad sends a note signals for the 8x8 grid and the
+    # the launchpad sends note messages for the 8x8 grid and the
     # buttons on the right of it and it sends control messages for the
     # top row of pads
     #
@@ -59,7 +59,7 @@ class Launchpad(object):
 
     def note_off(self, note):
         """turn off the LEDs under a pad"""
-        midirwp.send_note_on(self.CHANNEL, note, 0)
+        midirwp.send_note_on(self.CHANNEL, note, self.CLEAR)
 
     def control_on(self, param, color):
         """turn on the LEDs under a pad in the top row
@@ -70,7 +70,7 @@ class Launchpad(object):
 
     def control_off(self, param):
         """turn off the LEDs under a pad in the top row"""
-        midirwp.send_control_change(self.CHANNEL, param, 0)
+        midirwp.send_control_change(self.CHANNEL, param, self.CLEAR)
 
     def flash_on(self):
         """flashes leds that are configured to flash"""
